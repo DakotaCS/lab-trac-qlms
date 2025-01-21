@@ -277,8 +277,8 @@ const UserManagementPage: React.FC = () => {
                 <option value="MANAGER">Manager</option>
               </select>
               <div className="form-actions">
-                <button onClick={handleAddUser}>Submit</button>
                 <button onClick={() => setShowDialog(null)}>Cancel</button>
+                <button onClick={handleAddUser}>Submit</button>
               </div>
             </div>
           </Popup>
@@ -348,8 +348,8 @@ const UserManagementPage: React.FC = () => {
                 </>
               )}
               <div className="form-actions">
-                <button onClick={handleSubmit}>Submit</button>
                 <button onClick={() => setShowDialog(null)}>Cancel</button>
+                <button onClick={handleSubmit}>Submit</button>
               </div>
             </div>
           </Popup>

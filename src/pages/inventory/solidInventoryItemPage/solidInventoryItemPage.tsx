@@ -117,7 +117,7 @@ const SolidChemicalInventoryPage: React.FC = () => {
     const delayDebounceFn = setTimeout(() => {
       setDebouncedSearchTerm(searchTerm);
       setDebouncedSearchColumn(searchColumn);
-      setPage(0); // Reset to first page when search changes
+      setPage(0);
     }, 500);
 
     return () => clearTimeout(delayDebounceFn);
@@ -347,9 +347,10 @@ const SolidChemicalInventoryPage: React.FC = () => {
           </div>
           <button
             className="go-to-top-button"
-            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          >
-            Go to Top
+            onClick={() => {
+            //Move the layout content from the upper-level element up when scrolling to the top
+            document.querySelector('.layout-content')?.scrollTo({top: 0, behavior: 'smooth',});}}
+          >Go to Top
           </button>
         </div>
 

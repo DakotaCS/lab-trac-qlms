@@ -300,8 +300,8 @@ const UnitForm: React.FC<UnitFormProps> = ({
         required
       />
       <div className="form-actions">
-        <button onClick={() => onSubmit(quantityUnit, quantityUnitCode)}>Submit</button>
         <button onClick={onCancel}>Cancel</button>
+        <button onClick={() => onSubmit(quantityUnit, quantityUnitCode)}>Submit</button>
       </div>
     </div>
   );

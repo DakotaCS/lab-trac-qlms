@@ -344,9 +344,10 @@ const LiquidChemicalInventoryPage: React.FC = () => {
           </div>
           <button
             className="go-to-top-button"
-            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          >
-            Go to Top
+            onClick={() => {
+            //Move the layout content from the upper-level element up when scrolling to the top
+            document.querySelector('.layout-content')?.scrollTo({top: 0, behavior: 'smooth',});}}
+          >Go to Top
           </button>
         </div>
 

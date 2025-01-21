@@ -224,8 +224,8 @@ const LocationForm: React.FC<LocationFormProps> = ({
         required
       />
       <div className="form-actions">
-        <button onClick={() => onSubmit(name, description)}>Submit</button>
         <button onClick={onCancel}>Cancel</button>
+        <button onClick={() => onSubmit(name, description)}>Submit</button>
       </div>
     </div>
   );

@@ -24,6 +24,7 @@ const UnclassifiedInventoryItemPage: React.FC = () => {
   const [showAddPopup, setShowAddPopup] = useState<boolean>(false);
   const [showUpdateDetailsPopup, setShowUpdateDetailsPopup] = useState<boolean>(false);
   const [showTransferPopup, setShowTransferPopup] = useState<boolean>(false);
+  const [showBulkTransferPopup, setShowBulkTransferPopup] = useState<boolean>(false);
   const [selectedItem, setSelectedItem] = useState<UnclassifiedInventoryItem | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
@@ -127,6 +128,25 @@ const UnclassifiedInventoryItemPage: React.FC = () => {
   };
 
   const handleBulkTransfer = async (inventoryType: string) => {
+    if (selectedItems.size < 1 || selectedItems.size > 50) {
+      setError('Error: Please select between 1 and 50 items.');
+      return;
+    }
+    try {
+      const idsArray = Array.from(selectedItems);
+
+      await apiClient.post('/inventory/unclassified/transfer', {
+        unclassifiedInventoryIdsToTransfer: idsArray,
+        inventoryType: inventoryType,
+      });
+
+      fetchInventoryItems();
+      setMessage('Message: Bulk transfer completed successfully.');
+    } catch (err) {
+      setError('Error: Could not complete bulk transfer.');
+    } finally {
+      setSelectedItems(new Set());
+    }
   };
 
   const handleBulkPrint = async () => {
@@ -167,6 +187,10 @@ const UnclassifiedInventoryItemPage: React.FC = () => {
     setShowTransferPopup(true);
   };
 
+  const openBulkTransferPopup = () => {
+    setShowBulkTransferPopup(true);
+  };
+
   const viewDetails = (id: number) => {
     window.location.href = `/inventory/unclassified/${id}`;
   };
@@ -200,7 +224,7 @@ const UnclassifiedInventoryItemPage: React.FC = () => {
         <div className="button-container">
           <button className="add-inventory-button" onClick={() => setShowAddPopup(true)}>Add Inventory</button>
           <button className="bulk-print-button" onClick={handleBulkPrint}>Bulk Print</button>
-          <button className="bulk-transfer-button" onClick={() => handleBulkTransfer('LIQUID')}>Bulk Transfer</button>
+          <button className="bulk-transfer-button" onClick={openBulkTransferPopup}>Bulk Transfer</button>
           <button className="clear-selection-button" onClick={clearSelections}>Clear Selection</button>
           <SearchBarWithFilter
             columns={columns}
@@ -282,9 +306,10 @@ const UnclassifiedInventoryItemPage: React.FC = () => {
           </div>
           <button
             className="go-to-top-button"
-            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          >
-            Go to Top
+            onClick={() => {
+            //Move the layout content from the upper-level element up when scrolling to the top
+            document.querySelector('.layout-content')?.scrollTo({top: 0, behavior: 'smooth',});}}
+          >Go to Top
           </button>
         </div>
 
@@ -316,6 +341,21 @@ const UnclassifiedInventoryItemPage: React.FC = () => {
             <TransferItemForm
               onSubmit={(inventoryType) => handleTransferItem(selectedItem.id, inventoryType)}
               onCancel={() => setShowTransferPopup(false)}
+            />
+          </Popup>
+        )}
+
+        {showBulkTransferPopup && (
+          <Popup
+            title="Bulk Transfer Items"
+            onClose={() => setShowBulkTransferPopup(false)}
+          >
+            <BulkTransferForm
+              onSubmit={(inventoryType) => {
+                handleBulkTransfer(inventoryType);
+                setShowBulkTransferPopup(false);
+              }}
+              onCancel={() => setShowBulkTransferPopup(false)}
             />
           </Popup>
         )}
@@ -462,6 +502,36 @@ const TransferItemForm: React.FC<{
   return (
     <div className="transfer-item-form">
       <label>Transfer Item to:</label>
+      <CustomDropdown
+        options={[
+          { value: 'SOLID', label: 'Solid' },
+          { value: 'LIQUID', label: 'Liquid' },
+        ]}
+        value={inventoryType}
+        onChange={(value) => setInventoryType(value)}
+      />
+
+      <div className="form-actions">
+        <button onClick={onCancel}>Cancel</button>
+        <button onClick={handleSubmit}>Submit</button>
+      </div>
+    </div>
+  );
+};
+
+const BulkTransferForm: React.FC<{
+  onSubmit: (inventoryType: string) => void;
+  onCancel: () => void;
+}> = ({ onSubmit, onCancel }) => {
+  const [inventoryType, setInventoryType] = useState<string>('LIQUID');
+
+  const handleSubmit = () => {
+    onSubmit(inventoryType);
+  };
+
+  return (
+    <div className="bulk-transfer-item-form">
+      <label>Transfer Items to:</label>
       <CustomDropdown
         options={[
           { value: 'SOLID', label: 'Solid' },
